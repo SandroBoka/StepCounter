@@ -2,45 +2,43 @@ import SwiftUI
 
 struct ContentView: View {
 
-    var percent: Double = 120
+    @ObservedObject var viewModel: ContentViewModel
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                RingShape()
-                    .stroke(style: StrokeStyle(lineWidth: Constants.lineWidth, lineCap: .round))
-                    .fill(Constants.backgroundCircleColor)
-                    .frame(width: Constants.width, height: Constants.height)
+        VStack {
+            Text("Steps: \(Int(viewModel.stepCount)) / \(Int(viewModel.dailyStepGoal))")
+                .font(.title)
+                .padding()
 
-                RingShape(drawnClockWise: false, percent: percent, startAngle: Constants.startAngle)
-                    .stroke(style: StrokeStyle(lineWidth: Constants.lineWidth, lineCap: .round))
-                    .fill(Constants.focusedCircleColor)
-                    .frame(width: Constants.width, height: Constants.height)
+            GeometryReader { geometry in
+                ZStack {
+                    RingShape()
+                        .stroke(style: StrokeStyle(lineWidth: Constants.lineWidth, lineCap: .round))
+                        .fill(Constants.backgroundCircleColor)
+                        .frame(width: Constants.width, height: Constants.height)
 
-                Circle()
-                    .fill(Constants.focusedCircleColor)
-                    .frame(width: Constants.lineWidth, height: Constants.lineWidth, alignment: .center)
-                    .offset(x: self.getEndCirclelocation(frame: geometry.size).0,
-                            y: self.getEndCirclelocation(frame: geometry.size).1)
-                    .shadow(color: Constants.shadowColor, radius: Constants.shadowRadius,
-                            x: getEndCircleShadowOffset().0,
-                            y: getEndCircleShadowOffset().1)
+                    RingShape(drawnClockWise: false, percent: viewModel.percent, startAngle: Constants.startAngle)
+                        .stroke(style: StrokeStyle(lineWidth: Constants.lineWidth, lineCap: .round))
+                        .fill(Constants.focusedCircleColor)
+                        .frame(width: Constants.width, height: Constants.height)
+
+                    Circle()
+                        .fill(Constants.focusedCircleColor)
+                        .frame(width: Constants.lineWidth, height: Constants.lineWidth, alignment: .center)
+                        .offset(x: self.getEndCirclelocation(frame: geometry.size).0,
+                                y: self.getEndCirclelocation(frame: geometry.size).1)
+                        .shadow(color: Constants.shadowColor, radius: Constants.shadowRadius,
+                                x: getEndCircleShadowOffset().0,
+                                y: getEndCircleShadowOffset().1)
+                }
             }
+            .padding(.vertical, 50)
+            .padding(.horizontal, 50)
         }
-        .padding(.vertical, 50)
-        .padding(.horizontal, 50)
-    }
-
-    private var absolutePercentageAngle: Double {
-        RingShape.percentToAngle(percent: percent, startAngle: 0)
-    }
-
-    private var relativePercentageAngle: Double {
-        absolutePercentageAngle + Constants.startAngle
     }
 
     private func getEndCirclelocation(frame: CGSize) -> (CGFloat, CGFloat) {
-        let angleOfEndInRadians: Double = relativePercentageAngle.toRadians()
+        let angleOfEndInRadians: Double = viewModel.relativePercentageAngle.toRadians()
         let offsetRadius = min(frame.width, frame.height) / 2
 
         return (offsetRadius * cos(angleOfEndInRadians).toCGFloat(),
@@ -48,7 +46,7 @@ struct ContentView: View {
     }
 
     private func getEndCircleShadowOffset() -> (CGFloat, CGFloat) {
-        let angleForOffset = absolutePercentageAngle + (Constants.startAngle + 90)
+        let angleForOffset = viewModel.absolutePercentageAngle + (Constants.startAngle + 90)
         let angleForOffsetInRadians = angleForOffset.toRadians()
         let relativeXOffset = cos(angleForOffsetInRadians)
         let relativeYOffset = sin(angleForOffsetInRadians)
@@ -60,10 +58,10 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(viewModel: ContentViewModel())
 }
 
-private struct Constants {
+struct Constants {
 
     static let width = 300.0
     static let height = 300.0

@@ -1,4 +1,5 @@
 import SwiftUI
+import HealthKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -12,7 +13,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             guard let windowScene = scene as? UIWindowScene else { return }
 
             let window = UIWindow(windowScene: windowScene)
-            let contentView = ContentView()
+            let contentViewModel = ContentViewModel()
+            let contentView = ContentView(viewModel: contentViewModel)
 
             window.rootViewController = UIHostingController(rootView: contentView)
             self.window = window
