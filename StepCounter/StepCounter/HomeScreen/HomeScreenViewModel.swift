@@ -2,6 +2,7 @@ import Foundation
 import HealthKit
 import Steps
 import Combine
+import SwiftUI
 
 class HomeScreenViewModel: ObservableObject {
     
@@ -11,6 +12,7 @@ class HomeScreenViewModel: ObservableObject {
     @Published var stepCount: Double = 0.0
     @Published var percent: Double = 0.0
     @Published var selectedColor: String
+    @Published var triggerCircleUpdate: Bool = false
 
     private let getColorUseCase: GetColorUseCaseProtocol
     private let setColorUseCase: SetColorUseCaseProtocol
@@ -36,10 +38,15 @@ class HomeScreenViewModel: ObservableObject {
         requestAuthorization()
 
         $dailyStepGoal
-            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+            .debounce(for: .milliseconds(1000), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink { [weak self] value in
                 guard let self else { return }
+
+                self.triggerCircleUpdate = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6){
+                    self.triggerCircleUpdate = true
+                }
 
                 self.dailyStepGoal = value
                 self.setDailySteps()

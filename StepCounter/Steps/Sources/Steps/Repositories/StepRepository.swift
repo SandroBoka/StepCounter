@@ -32,14 +32,11 @@ public class StepRepository: StepRepositoryProtocol {
     }
 
     public func setDailySteps(steps: Double) {
-        print("Setting \(steps)")
         sharedDefaults.set(steps, forKey: dailyStepsKey)
     }
 
     public func getDailySteps() -> Double {
         let steps = sharedDefaults.double(forKey: dailyStepsKey)
-
-        print(steps)
 
         if steps == 0.0 {
             setDailySteps(steps: 8000.0)

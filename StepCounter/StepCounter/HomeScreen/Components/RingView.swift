@@ -4,6 +4,10 @@ import Steps
 struct RingView: View {
     @ObservedObject var viewModel: HomeScreenViewModel
 
+    private var showCircle: Bool {
+        viewModel.triggerCircleUpdate
+    }
+
     var body: some View {
         VStack {
             Text("Steps: \(Int(viewModel.stepCount)) / \(Int(viewModel.dailyStepGoal))")
@@ -23,6 +27,8 @@ struct RingView: View {
                         .fill(AppColor.color(from: viewModel.selectedColor))
                         .frame(width: min(geometry.size.width, geometry.size.height),
                                height: min(geometry.size.width, geometry.size.height))
+                        .animation(.bouncy(duration: 1), value: viewModel.percent)
+                    
 
                     Circle()
                         .fill(AppColor.color(from: viewModel.selectedColor))
@@ -32,6 +38,8 @@ struct RingView: View {
                         .shadow(color: Constants.shadowColor, radius: Constants.shadowRadius,
                                 x: viewModel.getEndCircleShadowOffset().0,
                                 y: viewModel.getEndCircleShadowOffset().1)
+                        .opacity(showCircle ? 1 : 0)
+                        .animation(.easeInOut(duration: 0.6), value: showCircle)
                 }
             }
             .aspectRatio(1, contentMode: .fit)

@@ -30,9 +30,6 @@ struct HomeScreenView: View {
             .onChange(of: viewModel.selectedColor) {
                 viewModel.setColor()
             }
-//            .onChange(of: viewModel.dailyStepGoal) {
-//                viewModel.setDailySteps()
-//            }
 
             RingView(viewModel: viewModel)
         }
@@ -57,7 +54,6 @@ struct HomeScreenView: View {
                 .font(.headline)
             TextField("Steps", value: $viewModel.dailyStepGoal, format: .number)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-//                .keyboardType(.numberPad)
         }
     }
 
