@@ -1,11 +1,10 @@
 import Foundation
 import HealthKit
 import Steps
-import Combine
 import SwiftUI
 
-class HomeScreenViewModel: ObservableObject {
-    
+class WidgetViewModel: ObservableObject {
+
     private let healthStore = HKHealthStore()
 
     @Published var dailyStepGoal: Double
@@ -18,8 +17,6 @@ class HomeScreenViewModel: ObservableObject {
     private let setColorUseCase: SetColorUseCaseProtocol
     private let getDailyStepsUseCase: GetDailyStepsUseCaseProcotol
     private let setDailyStepsUseCase: SetDailyStepsUseCaseProtocol
-
-    private var cancellables = Set<AnyCancellable>()
 
     init(
         getColorUseCase: GetColorUseCaseProtocol,
@@ -36,22 +33,6 @@ class HomeScreenViewModel: ObservableObject {
         dailyStepGoal = getDailyStepsUseCase.getDailySteps()
 
         requestAuthorization()
-
-        $dailyStepGoal
-            .debounce(for: .milliseconds(1000), scheduler: DispatchQueue.main)
-            .removeDuplicates()
-            .sink { [weak self] value in
-                guard let self else { return }
-
-                self.triggerCircleUpdate = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6){
-                    self.triggerCircleUpdate = true
-                }
-
-                self.dailyStepGoal = value
-                self.setDailySteps()
-            }
-            .store(in: &cancellables)
     }
 
     func setColor() {
@@ -65,7 +46,7 @@ class HomeScreenViewModel: ObservableObject {
 
 }
 
-extension HomeScreenViewModel {
+extension WidgetViewModel {
 
     private func requestAuthorization() {
         let typesToShare: Set<HKSampleType> = []
@@ -73,8 +54,8 @@ extension HomeScreenViewModel {
             HKObjectType.quantityType(forIdentifier: .stepCount)!
         ]
 
-        healthStore.requestAuthorization(toShare: typesToShare, read: typesToRead) { (success, error) in
-            if success {
+        healthStore.getRequestStatusForAuthorization(toShare: typesToShare, read: typesToRead) { (status, error) in
+            if status == HKAuthorizationRequestStatus.unnecessary {
                 self.startStepCountUpdates()
             } else {
                 print("Authorization failed: \(error?.localizedDescription ?? "Unknown error")")
@@ -89,6 +70,7 @@ extension HomeScreenViewModel {
         let cal = Calendar(identifier: Calendar.Identifier.gregorian)
         let newDate = cal.startOfDay(for: date)
         let predicate = HKQuery.predicateForSamples(withStart: newDate, end: Date(), options: .strictStartDate)
+
 
         let query = HKAnchoredObjectQuery(
             type: stepCountType,
@@ -119,33 +101,33 @@ extension HomeScreenViewModel {
 
 }
 
-extension HomeScreenViewModel {
-
-    var absolutePercentageAngle: Double {
-        RingShape.percentToAngle(percent: percent, startAngle: 0)
-    }
-
-    var relativePercentageAngle: Double {
-        absolutePercentageAngle + Constants.startAngle
-    }
-
-    func getEndCirclelocation(frame: CGSize) -> (CGFloat, CGFloat) {
-        let angleOfEndInRadians: Double = relativePercentageAngle.toRadians()
-        let offsetRadius = min(frame.width, frame.height) / 2
-
-        return (offsetRadius * cos(angleOfEndInRadians).toCGFloat(),
-                offsetRadius * sin(angleOfEndInRadians).toCGFloat())
-    }
-
-    func getEndCircleShadowOffset() -> (CGFloat, CGFloat) {
-        let angleForOffset = absolutePercentageAngle + (Constants.startAngle + 90)
-        let angleForOffsetInRadians = angleForOffset.toRadians()
-        let relativeXOffset = cos(angleForOffsetInRadians)
-        let relativeYOffset = sin(angleForOffsetInRadians)
-        let xOffset = relativeXOffset.toCGFloat() * Constants.shadowOffsetMultiplier
-        let yOffset = relativeYOffset.toCGFloat() * Constants.shadowOffsetMultiplier
-
-        return (xOffset, yOffset)
-    }
-
-}
+//extension WidgetViewModel {
+//
+//    var absolutePercentageAngle: Double {
+//        RingShape.percentToAngle(percent: percent, startAngle: 0)
+//    }
+//
+//    var relativePercentageAngle: Double {
+//        absolutePercentageAngle + Constants.startAngle
+//    }
+//
+//    func getEndCirclelocation(frame: CGSize) -> (CGFloat, CGFloat) {
+//        let angleOfEndInRadians: Double = relativePercentageAngle.toRadians()
+//        let offsetRadius = min(frame.width, frame.height) / 2
+//
+//        return (offsetRadius * cos(angleOfEndInRadians).toCGFloat(),
+//                offsetRadius * sin(angleOfEndInRadians).toCGFloat())
+//    }
+//
+//    func getEndCircleShadowOffset() -> (CGFloat, CGFloat) {
+//        let angleForOffset = absolutePercentageAngle + (Constants.startAngle + 90)
+//        let angleForOffsetInRadians = angleForOffset.toRadians()
+//        let relativeXOffset = cos(angleForOffsetInRadians)
+//        let relativeYOffset = sin(angleForOffsetInRadians)
+//        let xOffset = relativeXOffset.toCGFloat() * Constants.shadowOffsetMultiplier
+//        let yOffset = relativeYOffset.toCGFloat() * Constants.shadowOffsetMultiplier
+//
+//        return (xOffset, yOffset)
+//    }
+//
+//}

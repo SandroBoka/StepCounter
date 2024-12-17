@@ -14,16 +14,16 @@ public class StepRepository: StepRepositoryProtocol {
     private let colorKey = "colorKey"
     private let dailyStepsKey = "dailyStepsKey"
 
-    private let sharedDefaults = UserDefaults()
+    private let sharedDefaults = UserDefaults(suiteName: "group.com.SandroBoka.Endava.StepCounter")
 
     public init() {}
 
     public func setColor(color: String) {
-        sharedDefaults.set(color, forKey: colorKey)
+        sharedDefaults!.set(color, forKey: colorKey)
     }
 
     public func getColor() -> String {
-        guard let color = sharedDefaults.string(forKey: colorKey) else {
+        guard let color = sharedDefaults!.string(forKey: colorKey) else {
             setColor(color: "Green")
             return "Green"
         }
@@ -32,11 +32,11 @@ public class StepRepository: StepRepositoryProtocol {
     }
 
     public func setDailySteps(steps: Double) {
-        sharedDefaults.set(steps, forKey: dailyStepsKey)
+        sharedDefaults!.set(steps, forKey: dailyStepsKey)
     }
 
     public func getDailySteps() -> Double {
-        let steps = sharedDefaults.double(forKey: dailyStepsKey)
+        let steps = sharedDefaults!.double(forKey: dailyStepsKey)
 
         if steps == 0.0 {
             setDailySteps(steps: 8000.0)

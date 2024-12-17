@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSExtension</key>
+	<dict>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.widgetkit-extension</string>
+	</dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>We use Health data to display your activity metrics in the app.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>We use Health data to track your step count and activity progress.</string>
+</dict>
+</plist>
