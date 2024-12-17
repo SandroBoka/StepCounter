@@ -44,21 +44,63 @@ struct SimpleEntry: TimelineEntry {
 
 struct StepCounterWidgetEntryView : View {
     var entry: Provider.Entry
+    @Environment(\.widgetFamily) var widgetFamily
 
     var body: some View {
-        VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-
-            Text("Steps: \(Int(entry.viewModel.stepCount)) / \(Int(entry.viewModel.dailyStepGoal))")
-                .fontWeight(.bold)
-                .foregroundStyle(AppColor.color(from: entry.viewModel.selectedColor))
+        VStack(spacing: 0) {
+            if widgetFamily == .systemSmall {
+                smallWidget
+            } else if widgetFamily == .systemMedium {
+                mediumWidget
+            }
         }
-        .containerBackground(for: .widget) {
-            Color.widgetGray
-        }
-        .ignoresSafeArea()
+        .foregroundStyle(.primaryForeground)
+        .containerBackground(.widgetGray.gradient, for: .widget)
     }
+
+    private var smallWidget: some View {
+        VStack {
+            Text("Steps")
+                .fontWeight(.semibold)
+
+            WidgetRingView(isSmall: true, viewModel: entry.viewModel)
+
+            Text("\(Int(entry.viewModel.stepCount)) / \(Int(entry.viewModel.dailyStepGoal))")
+                .font(.headline)
+        }
+    }
+
+    private var mediumWidget: some View {
+        HStack {
+            WidgetRingView(isSmall: false, viewModel: entry.viewModel)
+                .padding(.leading, 10)
+
+            Spacer()
+
+            Divider()
+                .padding(.horizontal, 10)
+
+            Spacer()
+
+            VStack(spacing: 12) {
+                Text("Steps")
+                    .fontWeight(.semibold)
+
+                Text("\(Int(entry.viewModel.stepCount)) / \(Int(entry.viewModel.dailyStepGoal))")
+                    .font(.headline)
+
+                Divider()
+
+                Text("Move Goal")
+                    .font(.headline)
+
+                Text("\(Int(entry.viewModel.percent)) %")
+                    .font(.headline)
+            }
+            .padding(.trailing, 10)
+        }
+    }
+
 }
 
 @main
@@ -78,7 +120,9 @@ struct StepCounterWidget: Widget {
         }
         .configurationDisplayName("My Widget")
         .description("This is an example widget.")
+        .supportedFamilies([.systemSmall, .systemMedium])
     }
+
 }
 
 struct StepCounterWidget_Previews: PreviewProvider {
@@ -93,7 +137,7 @@ struct StepCounterWidget_Previews: PreviewProvider {
         StepCounterWidgetEntryView(
             entry: SimpleEntry(date: Date(), stepCount: 5000, dailyStepGoal: 10000, viewModel: viewModel))
         .previewContext(WidgetPreviewContext(family: .systemMedium))
-        .previewContext(WidgetPreviewContext(family: .systemLarge))
+        .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 
 }

@@ -7,7 +7,6 @@ struct RingShape: Shape {
     private var percent: Double
     private var startAngle: Double
 
-    // percent determines changes in the shape
     var animatableData: Double {
         get { percent }
 

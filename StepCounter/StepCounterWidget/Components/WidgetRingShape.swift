@@ -1,13 +1,12 @@
 import SwiftUI
 
-struct RingShape: Shape {
+struct WidgetRingShape: Shape {
 
     private let drawnClockWise: Bool
 
     private var percent: Double
     private var startAngle: Double
 
-    // percent determines changes in the shape
     var animatableData: Double {
         get { percent }
 
@@ -29,7 +28,10 @@ struct RingShape: Shape {
         let height = rect.height
         let radius = min(width, height) / 2
         let center = CGPoint(x: width / 2, y: height / 2)
-        let endAngle = Angle(degrees: RingShape.percentToAngle(percent: self.percent, startAngle: self.startAngle))
+        let endAngle = Angle(
+            degrees: WidgetRingShape.percentToAngle(
+                percent: self.percent,
+                startAngle: self.startAngle))
 
         return Path { path in
             path.addArc(

@@ -11,7 +11,6 @@ class WidgetViewModel: ObservableObject {
     @Published var stepCount: Double = 0.0
     @Published var percent: Double = 0.0
     @Published var selectedColor: String
-    @Published var triggerCircleUpdate: Bool = false
 
     private let getColorUseCase: GetColorUseCaseProtocol
     private let setColorUseCase: SetColorUseCaseProtocol
@@ -101,33 +100,33 @@ extension WidgetViewModel {
 
 }
 
-//extension WidgetViewModel {
-//
-//    var absolutePercentageAngle: Double {
-//        RingShape.percentToAngle(percent: percent, startAngle: 0)
-//    }
-//
-//    var relativePercentageAngle: Double {
-//        absolutePercentageAngle + Constants.startAngle
-//    }
-//
-//    func getEndCirclelocation(frame: CGSize) -> (CGFloat, CGFloat) {
-//        let angleOfEndInRadians: Double = relativePercentageAngle.toRadians()
-//        let offsetRadius = min(frame.width, frame.height) / 2
-//
-//        return (offsetRadius * cos(angleOfEndInRadians).toCGFloat(),
-//                offsetRadius * sin(angleOfEndInRadians).toCGFloat())
-//    }
-//
-//    func getEndCircleShadowOffset() -> (CGFloat, CGFloat) {
-//        let angleForOffset = absolutePercentageAngle + (Constants.startAngle + 90)
-//        let angleForOffsetInRadians = angleForOffset.toRadians()
-//        let relativeXOffset = cos(angleForOffsetInRadians)
-//        let relativeYOffset = sin(angleForOffsetInRadians)
-//        let xOffset = relativeXOffset.toCGFloat() * Constants.shadowOffsetMultiplier
-//        let yOffset = relativeYOffset.toCGFloat() * Constants.shadowOffsetMultiplier
-//
-//        return (xOffset, yOffset)
-//    }
-//
-//}
+extension WidgetViewModel {
+
+    var absolutePercentageAngle: Double {
+        WidgetRingShape.percentToAngle(percent: percent, startAngle: 0)
+    }
+
+    var relativePercentageAngle: Double {
+        absolutePercentageAngle + Constants.startAngle
+    }
+
+    func getEndCirclelocation(frame: CGSize) -> (CGFloat, CGFloat) {
+        let angleOfEndInRadians: Double = relativePercentageAngle.toRadians()
+        let offsetRadius = min(frame.width, frame.height) / 2
+
+        return (offsetRadius * cos(angleOfEndInRadians).toCGFloat(),
+                offsetRadius * sin(angleOfEndInRadians).toCGFloat())
+    }
+
+    func getEndCircleShadowOffset() -> (CGFloat, CGFloat) {
+        let angleForOffset = absolutePercentageAngle + (Constants.startAngle + 90)
+        let angleForOffsetInRadians = angleForOffset.toRadians()
+        let relativeXOffset = cos(angleForOffsetInRadians)
+        let relativeYOffset = sin(angleForOffsetInRadians)
+        let xOffset = relativeXOffset.toCGFloat() * Constants.widgetShadowOffsetMultiplier
+        let yOffset = relativeYOffset.toCGFloat() * Constants.widgetShadowOffsetMultiplier
+
+        return (xOffset, yOffset)
+    }
+
+}

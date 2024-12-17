@@ -11,8 +11,13 @@ public struct Constants {
     public static let shadowRadius: CGFloat = 5
     public static let shadowOffsetMultiplier: CGFloat = shadowRadius + 2
 
-    public static let backgroundCircleColor = Color.green.opacity(0.4)
-    public static let focusedCircleColor = Color.green
     public static let shadowColor = Color.black.opacity(0.2)
+
+    public static let widgetWidth = 75.0
+    public static let widgetHeight = 75.0
+    public static let widgetLineWidth = 10.0
+
+    public static let widgetShadowRadius: CGFloat = 2.5
+    public static let widgetShadowOffsetMultiplier: CGFloat = widgetShadowRadius + 1
 
 }
