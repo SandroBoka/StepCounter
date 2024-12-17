@@ -11,34 +11,38 @@ struct Provider: TimelineProvider {
         setDailyStepsUseCase: SetDailyStepsUseCase(stepsRepository: StepRepository()))
 
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), stepCount: 5000, dailyStepGoal: 10000, viewModel: viewModel)
+        SimpleEntry(date: Date(), viewModel: viewModel)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), stepCount: 5000, dailyStepGoal: 10000, viewModel: viewModel)
+        let entry = SimpleEntry(date: Date(), viewModel: viewModel)
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
+        Task {
+            viewModel.updateData()
 
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, stepCount: 5000, dailyStepGoal: 10000, viewModel: viewModel)
-            entries.append(entry)
+            let entry = SimpleEntry(date: Date(), viewModel: viewModel)
+
+            let nextUpdate = Calendar.current.date(
+                byAdding: DateComponents(minute: 15),
+                to: Date()
+            )!
+
+            let timeline = Timeline(
+                entries: [entry],
+                policy: .after(nextUpdate)
+            )
+
+            completion(timeline)
         }
-
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
     }
 
 }
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let stepCount: Double
-    let dailyStepGoal: Double
     let viewModel: WidgetViewModel
 }
 
@@ -135,7 +139,7 @@ struct StepCounterWidget_Previews: PreviewProvider {
 
     static var previews: some View {
         StepCounterWidgetEntryView(
-            entry: SimpleEntry(date: Date(), stepCount: 5000, dailyStepGoal: 10000, viewModel: viewModel))
+            entry: SimpleEntry(date: Date(), viewModel: viewModel))
         .previewContext(WidgetPreviewContext(family: .systemMedium))
         .previewContext(WidgetPreviewContext(family: .systemSmall))
     }

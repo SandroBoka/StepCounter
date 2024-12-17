@@ -33,6 +33,7 @@ struct HomeScreenView: View {
 
             RingView(viewModel: viewModel)
         }
+        
     }
 
     private var ringColor: some View {

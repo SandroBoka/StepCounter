@@ -1,5 +1,6 @@
 import SwiftUI
 import HealthKit
+import WidgetKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -19,4 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             dependencies.router.startIn(window: window)
         }
 
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        WidgetCenter.shared.reloadAllTimelines()
+    }
 }

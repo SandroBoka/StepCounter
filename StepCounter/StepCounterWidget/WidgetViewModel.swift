@@ -43,6 +43,12 @@ class WidgetViewModel: ObservableObject {
         startStepCountUpdates()
     }
 
+    func updateData() {
+        selectedColor = getColorUseCase.getColor()
+        dailyStepGoal = getDailyStepsUseCase.getDailySteps()
+        requestAuthorization()
+    }
+
 }
 
 extension WidgetViewModel {
